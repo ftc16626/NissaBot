@@ -39,18 +39,35 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name="Servo_Fun", group="Shame")
 public class ServoTutorial extends OpMode {
     public Servo Wheel1;
+    public Servo Wheel2;
+
     @Override
     public void init() {
         Wheel1 = hardwareMap.get(Servo.class, "Wheel1");
-
+        Wheel2 = hardwareMap.get(Servo.class, "Wheel2");
     }
 
     @Override
     public void loop() {
-        if(gamepad1.left_bumper){;
+        if (gamepad1.left_bumper) {
+            ;
             Wheel1.setPosition(1);
 
-    }
-        if(gamepad1.right_bumper){;
+        }
+        if (gamepad1.right_bumper) {
+            ;
             Wheel1.setPosition(-1);
-}}}
+
+
+        }
+        if (gamepad2.left_bumper) {
+            ;
+            Wheel2.setPosition(1);
+        }
+
+        if (gamepad2.right_bumper) {
+            ;
+            Wheel2.setPosition(-1);
+        }
+    }
+}
