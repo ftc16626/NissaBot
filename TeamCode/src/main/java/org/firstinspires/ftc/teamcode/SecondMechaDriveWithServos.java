@@ -64,7 +64,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="SecondMecha", group="Shame")
-public class SecondMechaDrive extends LinearOpMode {
+public class SecondMechaDriveWithServos extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
