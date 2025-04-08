@@ -68,36 +68,35 @@ public class HuskyLensAuto extends LinearOpMode {
 
     private HuskyLens huskyLens;
     private final int READ_PERIOD = 1;
-    private DcMotor LFMotor   = null;
-    private DcMotor         RFMotor  = null;
-    private DcMotor         LBMotor   = null;
-    private DcMotor         RBMotor  = null;
-    private DcMotor         rotateArm = null;
-    private DcMotor         extendArm = null;
-    private DcMotor         extendArm2 = null;
+    private DcMotor LFMotor = null;
+    private DcMotor RFMotor = null;
+    private DcMotor LBMotor = null;
+    private DcMotor RBMotor = null;
+    private DcMotor rotateArm = null;
+    private DcMotor extendArm = null;
+    private DcMotor extendArm2 = null;
     CRServo Wheel1;
     CRServo Wheel2;
     private ElapsedTime runtime = new ElapsedTime(); // runs time
 
-    static final double     COUNTS_PER_DRIVE_MOTOR_REV   = 384.5;
-    static final double     COUNTS_PER_EXT_MOTOR_REV    = 537.7;
-    static final double     COUNTS_PER_ROT_MOTOR_REV    = 1993.6; // Find motor RPMS
-    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;
-    static final double     PULLEY_DIAMETER_INCHES = 1.5 ;// For figuring circumference
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_DRIVE_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+    static final double COUNTS_PER_DRIVE_MOTOR_REV = 384.5;
+    static final double COUNTS_PER_EXT_MOTOR_REV = 537.7;
+    static final double COUNTS_PER_ROT_MOTOR_REV = 1993.6; // Find motor RPMS
+    static final double DRIVE_GEAR_REDUCTION = 1.0;     // No External Gearing.
+    static final double WHEEL_DIAMETER_INCHES = 4.0;
+    static final double PULLEY_DIAMETER_INCHES = 1.5;// For figuring circumference
+    static final double COUNTS_PER_INCH = (COUNTS_PER_DRIVE_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     COUNTS_PER_EXTINCH      = (COUNTS_PER_EXT_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+    static final double COUNTS_PER_EXTINCH = (COUNTS_PER_EXT_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (PULLEY_DIAMETER_INCHES * 3.1415);
-    static final double     ROTATE_GEAR_REDUC = 2.0 ;
-    static final double     COUNTS_PER_DEGREE       = (COUNTS_PER_ROT_MOTOR_REV * ROTATE_GEAR_REDUC) / 360;
-    static final double     DRIVE_SPEED             = 1;
-    static final double     TURN_SPEED              = 0.5;
-    static final double     ROT_SPEED               = 1; // Variables for speeds
+    static final double ROTATE_GEAR_REDUC = 2.0;
+    static final double COUNTS_PER_DEGREE = (COUNTS_PER_ROT_MOTOR_REV * ROTATE_GEAR_REDUC) / 360;
+    static final double DRIVE_SPEED = 1;
+    static final double TURN_SPEED = 0.5;
+    static final double ROT_SPEED = 1; // Variables for speeds
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
         RBMotor = hardwareMap.get(DcMotor.class, "RBMotor"); // You know this
         RFMotor = hardwareMap.get(DcMotor.class, "RFMotor");
@@ -174,7 +173,7 @@ public class HuskyLensAuto extends LinearOpMode {
          *
          * Note again that the device only recognizes the 36h11 family of tags out of the box.
          */
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
             if (!rateLimit.hasExpired()) {
                 continue;
             }
@@ -202,26 +201,33 @@ public class HuskyLensAuto extends LinearOpMode {
                 telemetry.addData("BlockLength", blocks[i].height);
 
                 if (blockx <= AREAONE) {
-                    zone =1;
-                } else if (blockx <= AREATWO){
+                    zone = 1;
+                } else if (blockx <= AREATWO) {
                     zone = 2;
-                }else if (blockx >= AREATHREE){
+                } else if (blockx >= AREATHREE) {
                     zone = 3;
                 }
-                }
-
-                telemetry.addData("ZONE", zone);
-                /*
-                 * Here inside the FOR loop, you could save or evaluate specific info for the currently recognized Bounding Box:
-                 * - blocks[i].width and blocks[i].height   (size of box, in pixels)
-                 * - blocks[i].left and blocks[i].top       (edges of box)
-                 * - blocks[i].x and blocks[i].y            (center location)
-                 * -blocks[i].id                           (Color ID)
-                 *
-                 * These values have Java type int (integer).
-                 */
-            telemetry.update();
             }
+
+            telemetry.addData("zone", zone);
+            /*
+             * Here inside the FOR loop, you could save or evaluate specific info for the currently recognized Bounding Box:
+             * - blocks[i].width and blocks[i].height   (size of box, in pixels)
+             * - blocks[i].left and blocks[i].top       (edges of box)
+             * - blocks[i].x and blocks[i].y            (center location)
+             * -blocks[i].id                           (Color ID)
+             *
+             * These values have Java type int (integer).
+             */
             telemetry.update();
+
+
+            sleep(1000);
+
+            if (zone == 1) {
+
+                telemetry.update();
+        }
         }
     }
+}
