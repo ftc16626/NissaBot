@@ -33,9 +33,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
@@ -59,17 +62,65 @@ import java.util.concurrent.TimeUnit;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
-@TeleOp(name = "Sensor: HuskyLens", group = "Sensor")
-public class HuskyLensEx extends LinearOpMode {
+@Autonomous(name = "HuskyAuto", group = "Sensor")
+public class HuskyLensAuto extends LinearOpMode {
 
-    private final int READ_PERIOD = 1;
 
     private HuskyLens huskyLens;
+    private final int READ_PERIOD = 1;
+    private DcMotor LFMotor   = null;
+    private DcMotor         RFMotor  = null;
+    private DcMotor         LBMotor   = null;
+    private DcMotor         RBMotor  = null;
+    private DcMotor         rotateArm = null;
+    private DcMotor         extendArm = null;
+    private DcMotor         extendArm2 = null;
+    CRServo Wheel1;
+    CRServo Wheel2;
+    private ElapsedTime runtime = new ElapsedTime(); // runs time
+
+    static final double     COUNTS_PER_DRIVE_MOTOR_REV   = 384.5;
+    static final double     COUNTS_PER_EXT_MOTOR_REV    = 537.7;
+    static final double     COUNTS_PER_ROT_MOTOR_REV    = 1993.6; // Find motor RPMS
+    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
+    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;
+    static final double     PULLEY_DIAMETER_INCHES = 1.5 ;// For figuring circumference
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_DRIVE_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double     COUNTS_PER_EXTINCH      = (COUNTS_PER_EXT_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (PULLEY_DIAMETER_INCHES * 3.1415);
+    static final double     ROTATE_GEAR_REDUC = 2.0 ;
+    static final double     COUNTS_PER_DEGREE       = (COUNTS_PER_ROT_MOTOR_REV * ROTATE_GEAR_REDUC) / 360;
+    static final double     DRIVE_SPEED             = 1;
+    static final double     TURN_SPEED              = 0.5;
+    static final double     ROT_SPEED               = 1; // Variables for speeds
 
     @Override
     public void runOpMode()
     {
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
+        RBMotor = hardwareMap.get(DcMotor.class, "RBMotor"); // You know this
+        RFMotor = hardwareMap.get(DcMotor.class, "RFMotor");
+        LBMotor = hardwareMap.get(DcMotor.class, "LBMotor");
+        LFMotor = hardwareMap.get(DcMotor.class, "LFMotor");
+        rotateArm = hardwareMap.get(DcMotor.class, "rotateArm");
+        extendArm = hardwareMap.get(DcMotor.class, "extendArm1");
+        extendArm2 = hardwareMap.get(DcMotor.class, "extendArm2");
+        Wheel1 = hardwareMap.get(CRServo.class, "Wheel1");
+        Wheel1.resetDeviceConfigurationForOpMode();
+        Wheel2 = hardwareMap.get(CRServo.class, "Wheel2");
+        Wheel2.resetDeviceConfigurationForOpMode();
+
+        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
+        // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
+        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
+        LFMotor.setDirection(DcMotor.Direction.REVERSE);
+        LBMotor.setDirection(DcMotor.Direction.REVERSE);
+        RFMotor.setDirection(DcMotor.Direction.FORWARD);
+        RBMotor.setDirection(DcMotor.Direction.FORWARD);
+        rotateArm.setDirection(DcMotor.Direction.REVERSE);
+        extendArm.setDirection(DcMotor.Direction.FORWARD);
+        extendArm2.setDirection(DcMotor.Direction.REVERSE);
 
         /*
          * This sample rate limits the reads solely to allow a user time to observe
@@ -129,6 +180,10 @@ public class HuskyLensEx extends LinearOpMode {
             }
             rateLimit.reset();
 
+            final int AREAONE = 105;
+            final int AREATWO = 210;
+            final int AREATHREE = 211;
+            int zone = 0;
             /*
              * All algorithms, except for LINE_TRACKING, return a list of Blocks where a
              * Block represents the outline of a recognized object along with its ID number.
@@ -141,10 +196,21 @@ public class HuskyLensEx extends LinearOpMode {
             HuskyLens.Block[] blocks = huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
             for (int i = 0; i < blocks.length; i++) {
+                int blockx = blocks[i].x;
                 telemetry.addData("Block", blocks[i].toString());
                 telemetry.addData("BlockWidth", blocks[i].width);
                 telemetry.addData("BlockLength", blocks[i].height);
 
+                if (blockx <= AREAONE) {
+                    zone =1;
+                } else if (blockx <= AREATWO){
+                    zone = 2;
+                }else if (blockx >= AREATHREE){
+                    zone = 3;
+                }
+                }
+
+                telemetry.addData("ZONE", zone);
                 /*
                  * Here inside the FOR loop, you could save or evaluate specific info for the currently recognized Bounding Box:
                  * - blocks[i].width and blocks[i].height   (size of box, in pixels)
@@ -154,8 +220,8 @@ public class HuskyLensEx extends LinearOpMode {
                  *
                  * These values have Java type int (integer).
                  */
+            telemetry.update();
             }
             telemetry.update();
         }
     }
-}
