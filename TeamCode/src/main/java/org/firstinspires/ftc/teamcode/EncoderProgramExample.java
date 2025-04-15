@@ -24,7 +24,7 @@ public class EncoderProgramExample extends LinearOpMode {
     CRServo Wheel1;
     CRServo Wheel2;
 
-    private ElapsedTime     runtime = new ElapsedTime(); // runs time
+    private ElapsedTime runtime = new ElapsedTime(); // runs time
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
     // Go to your motor vendor website to determine your motor's COUNTS_PER_MOTOR_REV
