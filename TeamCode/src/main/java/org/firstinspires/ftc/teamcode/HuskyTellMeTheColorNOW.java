@@ -64,7 +64,7 @@ public class HuskyTellMeTheColorNOW extends LinearOpMode {
         LBMotor = hardwareMap.get(DcMotor.class, "LBMotor");
         LFMotor = hardwareMap.get(DcMotor.class, "LFMotor");
         rotateArm = hardwareMap.get(DcMotor.class, "rotateArm");
-        extendArm = hardwareMap.get(DcMotor.class, "extendArm");
+        extendArm = hardwareMap.get(DcMotor.class, "extendArm1");
         extendArm2 = hardwareMap.get(DcMotor.class, "extendArm2");
         Wheel1 = hardwareMap.get(CRServo.class, "Wheel1");
         Wheel1.resetDeviceConfigurationForOpMode();
