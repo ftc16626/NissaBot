@@ -129,22 +129,22 @@ public class HuskyTellMeTheColorNOW extends LinearOpMode {
             HuskyLens.Block[] block = Husky.blocks();
             telemetry.addData("Block count", block.length);
             for (int i = 0; i < block.length; i++) {
-                if (block[i].width * block[i].height > 20000) {
+                if (block[i].width * block[i].height > 500) {
                     if (block[i].id == 1) {
-                        encoderDrive(0.7, ROT_SPEED,0, 0, 0, 0, false, 10, 13 , 1, -1, 5);
+                       // encoderDrive(0.7, ROT_SPEED,0, 0, 0, 0, false, 10, 13 , 1, -1, 5);
 
                         telemetry.addData("Pickup?", "Yes");
                     }
                     else {
                         encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, true, 0, 0 , 0, 0, 5);
                         if (block[i].id == 1){
-                            encoderDrive(0.7, ROT_SPEED,0, 0, 0, 0, false, 10, 13 , 1, -1, 5);
+                        //    encoderDrive(0.7, ROT_SPEED,0, 0, 0, 0, false, 10, 13 , 1, -1, 5);
 
                         }
                         else {
                             encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, true, 0, 0 , 0, 0, 5);
                             if (block[i].id == 1){
-                            encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, true, 0, 0 , 0, 0, 5);
+                           // encoderDrive(0.7, ROT_SPEED,0, 0, 0, 00, false, 10, 13 , 1, -1, 5);
                         }
 
                         }
