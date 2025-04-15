@@ -34,13 +34,8 @@ public class HuskyTellMeTheColorNOW extends LinearOpMode {
             HuskyLens.Block[] block = Husky.blocks();
             telemetry.addData("Block count", block.length);
             for (int i = 0; i < block.length; i++) {
-                if (block[i].width * block[i].height > 20000) {
-                    if (block[i].id == 1) {
+                if (block[i].width * block[i].height > 100 && block[i].id == 1 && block[i].x > 130 && block[i].x < 190 && block[i].y > 220) {
                         telemetry.addData("Pickup?", "Yes");
-                    }
-                    else {
-                        telemetry.addData("Pickup?", "I would say yes, but it's the wrong color.");
-                    }
                 }
                 else{
                     telemetry.addData("Pickup?", "NO!");
