@@ -6,11 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
+
 
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -18,7 +14,7 @@ import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "Husky, Tell me the color NOW!", group = "Shame")
+@Autonomous(name = "very specific name no confusion", group = "Shame")
 public class HuskyTellMeTheColorNOW extends LinearOpMode {
     private DcMotor LFMotor   = null;
     private DcMotor         RFMotor  = null;
@@ -124,7 +120,7 @@ public class HuskyTellMeTheColorNOW extends LinearOpMode {
             // Immediately expire so that the first time through we'll do the read.
 
             rateLimit.expire();
-        encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, false, 0, 0 , 0, 0, 5);
+        encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, false, 0, 0 , 0, 0, .5);
 
             HuskyLens.Block[] block = Husky.blocks();
             telemetry.addData("Block count", block.length);
@@ -136,13 +132,13 @@ public class HuskyTellMeTheColorNOW extends LinearOpMode {
                         telemetry.addData("Pickup?", "Yes");
                     }
                     else {
-                        encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, true, 0, 0 , 0, 0, 5);
+                        encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, true, 0, 0 , 0, 0, .5);
                         if (block[i].id == 1){
                         //    encoderDrive(0.7, ROT_SPEED,0, 0, 0, 0, false, 10, 13 , 1, -1, 5);
 
                         }
                         else {
-                            encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, true, 0, 0 , 0, 0, 5);
+                            encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, true, 0, 0 , 0, 0, .5);
                             if (block[i].id == 1){
                            // encoderDrive(0.7, ROT_SPEED,0, 0, 0, 00, false, 10, 13 , 1, -1, 5);
                         }

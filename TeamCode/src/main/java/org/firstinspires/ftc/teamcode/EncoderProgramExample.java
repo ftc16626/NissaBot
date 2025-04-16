@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -72,8 +73,8 @@ public class EncoderProgramExample extends LinearOpMode {
         RFMotor.setDirection(DcMotor.Direction.FORWARD);
         RBMotor.setDirection(DcMotor.Direction.FORWARD);
         rotateArm.setDirection(DcMotor.Direction.REVERSE);
-        extendArm.setDirection(DcMotor.Direction.FORWARD);
-        extendArm2.setDirection(DcMotor.Direction.REVERSE);
+        extendArm.setDirection(DcMotor.Direction.REVERSE);
+        extendArm2.setDirection(DcMotor.Direction.FORWARD);
 
         LFMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LBMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
