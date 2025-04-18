@@ -1,6 +1,7 @@
+
+
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -8,15 +9,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+@Autonomous(name="work", group="SecondBot")
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+public class encode extends LinearOpMode {
 
-import java.util.concurrent.TimeUnit;
-
-@Autonomous(name = "very specific name no confusion", group = "Shame")
-public class HuskyTellMeTheColorNOW extends LinearOpMode {
-    private DcMotor LFMotor   = null;
+    /* Declare OpMode members. */
+    private DcMotor         LFMotor   = null;
     private DcMotor         RFMotor  = null;
     private DcMotor         LBMotor   = null;
     private DcMotor         RBMotor  = null;
@@ -41,41 +39,41 @@ public class HuskyTellMeTheColorNOW extends LinearOpMode {
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;
     static final double     PULLEY_DIAMETER_INCHES = 1.5 ;// For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_DRIVE_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
+                                                      (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     COUNTS_PER_EXTINCH      = (COUNTS_PER_EXT_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (PULLEY_DIAMETER_INCHES * 3.1415);
+                                                      (PULLEY_DIAMETER_INCHES * 3.1415);
     static final double     ROTATE_GEAR_REDUC = 2.0 ;
     static final double     COUNTS_PER_DEGREE       = (COUNTS_PER_ROT_MOTOR_REV * ROTATE_GEAR_REDUC) / 360;
     static final double     DRIVE_SPEED             = 1;
     static final double     TURN_SPEED              = 0.5;
     static final double     ROT_SPEED               = 1; // Variables for speeds
 
-
-    public HuskyLens Husky;
-
     @Override
-    public void runOpMode(){
+    public void runOpMode() {
+
+        // Initialize the drive system variables.
         RBMotor = hardwareMap.get(DcMotor.class, "RBMotor"); // You know this
         RFMotor = hardwareMap.get(DcMotor.class, "RFMotor");
         LBMotor = hardwareMap.get(DcMotor.class, "LBMotor");
         LFMotor = hardwareMap.get(DcMotor.class, "LFMotor");
         rotateArm = hardwareMap.get(DcMotor.class, "rotateArm");
-        extendArm = hardwareMap.get(DcMotor.class, "extendArm1");
+        extendArm = hardwareMap.get(DcMotor.class, "extendArm");
         extendArm2 = hardwareMap.get(DcMotor.class, "extendArm2");
         Wheel1 = hardwareMap.get(CRServo.class, "Wheel1");
         Wheel1.resetDeviceConfigurationForOpMode();
         Wheel2 = hardwareMap.get(CRServo.class, "Wheel2");
         Wheel2.resetDeviceConfigurationForOpMode();
 
-        Husky = hardwareMap.get(HuskyLens.class, "huskylens");
-        Husky.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
+        // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
+        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         LFMotor.setDirection(DcMotor.Direction.REVERSE);
         LBMotor.setDirection(DcMotor.Direction.REVERSE);
         RFMotor.setDirection(DcMotor.Direction.FORWARD);
         RBMotor.setDirection(DcMotor.Direction.FORWARD);
         rotateArm.setDirection(DcMotor.Direction.REVERSE);
-        extendArm.setDirection(DcMotor.Direction.FORWARD);
-        extendArm2.setDirection(DcMotor.Direction.REVERSE);
+        extendArm.setDirection(DcMotor.Direction.REVERSE);
+        extendArm2.setDirection(DcMotor.Direction.FORWARD);
 
         LFMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LBMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -91,83 +89,62 @@ public class HuskyTellMeTheColorNOW extends LinearOpMode {
         RBMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rotateArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         extendArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        extendArm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        extendArm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // sets encoders to send information
 
+
+        // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Starting at",  "%7d :%7d",
-                LFMotor.getCurrentPosition(),
-                LBMotor.getCurrentPosition(),
-                RFMotor.getCurrentPosition(),
-                RBMotor.getCurrentPosition(),
-                rotateArm.getCurrentPosition(),
-                extendArm.getCurrentPosition(),
-                extendArm2.getCurrentPosition());
+                          LFMotor.getCurrentPosition(),
+                          LBMotor.getCurrentPosition(),
+                          RFMotor.getCurrentPosition(),
+                          RBMotor.getCurrentPosition(),
+                          rotateArm.getCurrentPosition(),
+                          extendArm.getCurrentPosition(),
+                          extendArm2.getCurrentPosition());
         telemetry.update();
 
-
+        // Wait for the game to start (driver presses START)
         waitForStart();
         rotateArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         extendArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         RBMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         RFMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         LFMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        LBMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    while (opModeIsActive()) {
-            int READ_PERIOD = 1;
-            ;
+        LBMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); // when no power make it hard to rotate
+        // Step through each leg of the path,
+        // Note: Reverse movement is obtained by setting a negative distance (not speed)
+        encoderDrive(0.7, ROT_SPEED, 20, 20, 20, 20, false, 0, 0, 0, 0, 5);
+        encoderDrive(0.7, ROT_SPEED, -10, -10, -10, -10, false, 0, 0, 0, 0, 5);
+        encoderDrive(0.7, ROT_SPEED, 10, 10, 10, 10, true, 0, 0, 0, 0, 5);
+        encoderDrive(0.7, ROT_SPEED, -10, -10, -10, -10, true, 0, 0, 0, 0, 5);
+        encoderDrive(0.7, ROT_SPEED, -10, -10, 10, 10, false, 0, 0, 0, 0, 5);
+        encoderDrive(0.7, ROT_SPEED, 10, 10, -10, -10, false, 0, 0, 0, 0, 5);
 
-            Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
 
-            // Immediately expire so that the first time through we'll do the read.
 
-            rateLimit.expire();
-        final int AREAONE = 117;
-        final int AREATWO = 202;
-        final int AREATHREE = 262;
 
-        encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, false, 0, 0 , 0, 0, .5);
 
-            HuskyLens.Block[] block = Husky.blocks();
-            telemetry.addData("Block count", block.length);
-            for (int i = 0; i < block.length; i++) {
-                if (block[i].width * block[i].height > 500) {
-                    int blockX = block[i].x;
-                    telemetry.addData("Block X", blockX);
 
-                    if (block[i].id == 1) {
-                       // encoderDrive(0.7, ROT_SPEED,0, 0, 0, 0, false, 10, 13 , 1, -1, 5);
 
-                        telemetry.addData("Pickup?", "Yes");
-                    }
-                    else {
-                        encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, true, 0, 0 , 0, 0, .5);
-                        if (block[i].id == 1){
-                        //    encoderDrive(0.7, ROT_SPEED,0, 0, 0, 0, false, 10, 13 , 1, -1, 5);
 
-                        }
-                        else {
-                            encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, true, 0, 0 , 0, 0, .5);
-                            if (block[i].id == 1){
-                           // encoderDrive(0.7, ROT_SPEED,0, 0, 0, 00, false, 10, 13 , 1, -1, 5);
-                        }
 
-                        }
 
-                        telemetry.addData("Pickup?", "I would say yes, but it's the wrong color.");
-                    }
-                }
-                else{
 
-                    telemetry.addData("Pickup?", "NO!");
-                }
-            }
-            telemetry.update();
-        }
-    } public void encoderDrive(double speed, double armspeed,
-                               double leftFInches, double leftBInches,
-                               double rightFInches, double rightBInches,
-                               boolean Strafe,
-                               double RotDegrees, double ExtInches, double wheel1Power, double wheel2Power,
-                               double timeoutS) { // set variables to use
+
+
+                telemetry.addData("Path", "Complete");
+
+        telemetry.update();
+        sleep(1000);  // pause to display final telemetry message.
+    }
+
+
+    public void encoderDrive(double speed, double armspeed,
+                             double leftFInches, double leftBInches,
+                             double rightFInches, double rightBInches,
+                             boolean Strafe,
+                             double RotDegrees, double ExtInches, double wheel1Power, double wheel2Power,
+                             double timeoutS) { // set variables to use
         int newLFTarget;
         int newLBTarget;
         int newRFTarget;
@@ -234,13 +211,13 @@ public class HuskyTellMeTheColorNOW extends LinearOpMode {
             // However, if you require that BOTH motors have finished their moves before the robot continues
             //onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
-                    (LFMotor.isBusy() || rotateArm.isBusy() || extendArm.isBusy() ||extendArm2.isBusy() || RFMotor.isBusy() || LBMotor.isBusy() || RBMotor.isBusy() )) { // program ends when motors are no longer busy
+                   (runtime.seconds() < timeoutS) &&
+                   (LFMotor.isBusy() || rotateArm.isBusy() || extendArm.isBusy() ||extendArm2.isBusy() || RFMotor.isBusy() || LBMotor.isBusy() || RBMotor.isBusy() )) { // program ends when motors are no longer busy
 
                 // Display it for the driver.
                 telemetry.addData("Running to",  " %7d :%7d", newLFTarget, newRFTarget,  newRBTarget,  newLBTarget);
                 telemetry.addData("Currently at",  " at %7d :%7d",
-                        LFMotor.getCurrentPosition(), RFMotor.getCurrentPosition(), LBMotor.getCurrentPosition(), RBMotor.getCurrentPosition(), rotateArm.getCurrentPosition(), extendArm.getCurrentPosition()); // telemetry encoder positions
+                                            LFMotor.getCurrentPosition(), RFMotor.getCurrentPosition(), LBMotor.getCurrentPosition(), RBMotor.getCurrentPosition(), rotateArm.getCurrentPosition(), extendArm.getCurrentPosition()); // telemetry encoder positions
                 telemetry.update();
             }
 
@@ -261,9 +238,7 @@ public class HuskyTellMeTheColorNOW extends LinearOpMode {
             RBMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rotateArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             extendArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+            
         }
     }
 }
-
-
