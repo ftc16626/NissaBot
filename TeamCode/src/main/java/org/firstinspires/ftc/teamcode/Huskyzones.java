@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.EncoderProgramExample;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
@@ -110,6 +111,8 @@ public class Huskyzones extends LinearOpMode {
         LFMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         LBMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     while (opModeIsActive()) {
+        EncoderProgramExample object=null;
+        object.encoderDrive(0,0,0,0,0,0,false,0,0,0,0,0);
             int READ_PERIOD = 1;
             ;
 
@@ -142,9 +145,7 @@ public class Huskyzones extends LinearOpMode {
                 }
             }
             if (zone == 1) {
-                encoderDrive(0.7, ROT_SPEED, 15, 15, 15, 15, true, 0, 0, 0, 0, 5);
-                encoderDrive(0.7, ROT_SPEED, 21, 21, 21, 21, false, 0, 0, 0, 0, 5);
-                encoderDrive(0.7, ROT_SPEED,0, 0, 0, 0, false, 10, 13, 1, -1, 5);
+
 
             } //else if (zone == 3) {
                // encoderDrive(0.7, ROT_SPEED,21, 21, 21, 21, false, 0, 0 , 0, 0, 5);
@@ -154,108 +155,7 @@ public class Huskyzones extends LinearOpMode {
 
 
     }
-    } public void encoderDrive(double speed, double armspeed,
-                               double leftFInches, double leftBInches,
-                               double rightFInches, double rightBInches,
-                               boolean Strafe,
-                               double RotDegrees, double ExtInches, double wheel1Power, double wheel2Power,
-                               double timeoutS) { // set variables to use
-        int newLFTarget;
-        int newLBTarget;
-        int newRFTarget;
-        int newRBTarget;
-        int newROTarget;
-        int newEXTarget; // target variables
-
-        // Ensure that the OpMode is still active
-        if (opModeIsActive()) {
-            if (Strafe) {
-                LFMotor.setDirection(DcMotor.Direction.FORWARD);
-                RFMotor.setDirection(DcMotor.Direction.REVERSE);
-            }
-            else {
-                LFMotor.setDirection(DcMotor.Direction.REVERSE);
-                RFMotor.setDirection(DcMotor.Direction.FORWARD); // makes robot strafe
-            }
-
-
-
-
-            // Determine new target position, and pass to motor controller
-            newLFTarget = LFMotor.getCurrentPosition() + (int)(leftFInches * COUNTS_PER_INCH);
-            newLBTarget = LBMotor.getCurrentPosition() + (int)(leftBInches * COUNTS_PER_INCH);
-            newRFTarget = RFMotor.getCurrentPosition() + (int)(rightFInches * COUNTS_PER_INCH);
-            newRBTarget = RBMotor.getCurrentPosition() + (int)(rightBInches * COUNTS_PER_INCH);
-            newROTarget = rotateArm.getCurrentPosition() + (int)(RotDegrees * COUNTS_PER_DEGREE);
-            newEXTarget = extendArm.getCurrentPosition() + (int)(ExtInches * COUNTS_PER_EXTINCH); // sets variable to inch and degree targets
-
-            LFMotor.setTargetPosition(newLFTarget);
-            RFMotor.setTargetPosition(newRFTarget);
-            LBMotor.setTargetPosition(newLBTarget);
-            RBMotor.setTargetPosition(newRBTarget);
-            rotateArm.setTargetPosition(newROTarget);
-            extendArm.setTargetPosition(newEXTarget);
-            extendArm2.setTargetPosition(newEXTarget); // motors set to that target
-
-            // Turn On RUN_TO_POSITION
-            LFMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            RFMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            RBMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            LBMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rotateArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            extendArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            extendArm2.setMode(DcMotor.RunMode.RUN_TO_POSITION); // motors told to run to target
-            // reset the timeout time and start motion.
-            runtime.reset();
-            LFMotor.setPower(Math.abs(speed));
-            RFMotor.setPower(Math.abs(speed));
-            LBMotor.setPower(Math.abs(speed));
-            RBMotor.setPower(Math.abs(speed)); // speed at which the motor runs to target
-            rotateArm.setPower(1 * Math.abs(armspeed));
-            extendArm.setPower(Math.abs(speed));
-            extendArm2.setPower(1 * Math.abs(speed));
-            Wheel1.setPower(wheel1Power);
-            Wheel2.setPower(wheel2Power);
-
-
-
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            //onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
-                    (LFMotor.isBusy() || rotateArm.isBusy() || extendArm.isBusy() ||extendArm2.isBusy() || RFMotor.isBusy() || LBMotor.isBusy() || RBMotor.isBusy() )) { // program ends when motors are no longer busy
-
-                // Display it for the driver.
-                telemetry.addData("Running to",  " %7d :%7d", newLFTarget, newRFTarget,  newRBTarget,  newLBTarget);
-                telemetry.addData("Currently at",  " at %7d :%7d",
-                        LFMotor.getCurrentPosition(), RFMotor.getCurrentPosition(), LBMotor.getCurrentPosition(), RBMotor.getCurrentPosition(), rotateArm.getCurrentPosition(), extendArm.getCurrentPosition()); // telemetry encoder positions
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            LFMotor.setPower(0);
-            RFMotor.setPower(0);
-            LBMotor.setPower(0);
-            RBMotor.setPower(0); // stops power to motor at end of program
-            rotateArm.setPower(.05);
-            extendArm.setPower(0);
-            Wheel1.setPower(0);
-            Wheel2.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            LFMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            RFMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            LBMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // ends run to position reverts to data collection.
-            RBMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rotateArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            extendArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        }
     }
-}
+    }
 
 

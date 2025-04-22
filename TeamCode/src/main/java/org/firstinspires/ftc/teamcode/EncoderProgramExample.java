@@ -173,10 +173,12 @@ public class EncoderProgramExample extends LinearOpMode {
             if (Strafe) {
                 LFMotor.setDirection(DcMotor.Direction.FORWARD);
                 RFMotor.setDirection(DcMotor.Direction.REVERSE);
+                LBMotor.setDirection(DcMotor.Direction.REVERSE);
+                RBMotor.setDirection(DcMotor.Direction.FORWARD);
             }
             else {
                 LFMotor.setDirection(DcMotor.Direction.REVERSE);
-                RFMotor.setDirection(DcMotor.Direction.FORWARD); // makes robot strafe
+                RFMotor.setDirection(DcMotor.Direction.FORWARD);// makes robot strafe
             }
 
 
