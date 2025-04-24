@@ -72,6 +72,9 @@ public class NissaBotInnerMachinations extends LinearOpMode {
     private DcMotor LBMotor;
     private DcMotor RFMotor;
     private DcMotor RBMotor;
+    private DcMotor Ejecter1;
+    private DcMotor Ejecter2;
+    private CRServo Buzzsaw;
 
     @Override
     public void runOpMode() {
@@ -82,6 +85,9 @@ public class NissaBotInnerMachinations extends LinearOpMode {
         LBMotor  = hardwareMap.get(DcMotor.class, "LFMotor");
         RFMotor = hardwareMap.get(DcMotor.class, "RFMotor");
         RBMotor = hardwareMap.get(DcMotor.class, "RBMotor");
+        Ejecter1 = hardwareMap.get(DcMotor.class, "Ejecter1");
+        Ejecter2 = hardwareMap.get(DcMotor.class, "Ejecter2");
+        Buzzsaw = hardwareMap.get(CRServo.class, "Buzzsaw");
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -134,7 +140,30 @@ public class NissaBotInnerMachinations extends LinearOpMode {
                 rightBackPower  /= max;
             }
 
+            //Eject
+            if (gamepad1.right_bumper){
+                Ejecter1.setPower(1);
+                Ejecter2.setPower(-1);
+            }
+            else if (gamepad1.left_bumper){
+                Ejecter1.setPower(-1);
+                Ejecter2.setPower(1);
+            }
+            else{
+                Ejecter1.setPower(0);
+                Ejecter2.setPower(0);
+            }
 
+            //Up and Down
+            if(gamepad2.left_bumper){
+               Buzzsaw.setPower(1);
+            }
+            else if(gamepad2.right_bumper) {
+                Buzzsaw.setPower(-1);
+            }
+            else {
+                Buzzsaw.setPower(0);
+            }
 
             // Send calculated power to wheels
             LFMotor.setPower(leftFrontPower);
