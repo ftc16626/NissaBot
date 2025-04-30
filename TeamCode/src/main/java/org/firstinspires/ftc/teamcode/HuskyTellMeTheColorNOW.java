@@ -52,6 +52,7 @@ public class HuskyTellMeTheColorNOW extends LinearOpMode {
 
 
     public HuskyLens Husky;
+    private final int READ_PERIOD = 1;
 
     @Override
     public void runOpMode(){
@@ -111,57 +112,61 @@ public class HuskyTellMeTheColorNOW extends LinearOpMode {
         RFMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         LFMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         LBMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
+        rateLimit.expire();
     while (opModeIsActive()) {
-            int READ_PERIOD = 1;
-            ;
+        if (!rateLimit.hasExpired()) {
+            continue;
+        }
+        rateLimit.reset();
 
-            Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
 
             // Immediately expire so that the first time through we'll do the read.
 
-            rateLimit.expire();
+
         final int AREAONE = 117;
         final int AREATWO = 202;
         final int AREATHREE = 262;
+        int zone = 0;
 
-        encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, false, 0, 0 , 0, 0, .5);
 
             HuskyLens.Block[] block = Husky.blocks();
             telemetry.addData("Block count", block.length);
             for (int i = 0; i < block.length; i++) {
-                if (block[i].width * block[i].height > 500) {
                     int blockX = block[i].x;
                     telemetry.addData("Block X", blockX);
 
-                    if (block[i].id == 1) {
-                       // encoderDrive(0.7, ROT_SPEED,0, 0, 0, 0, false, 10, 13 , 1, -1, 5);
-
-                        telemetry.addData("Pickup?", "Yes");
-                    }
-                    else {
-                        encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, true, 0, 0 , 0, 0, .5);
-                        if (block[i].id == 1){
-                        //    encoderDrive(0.7, ROT_SPEED,0, 0, 0, 0, false, 10, 13 , 1, -1, 5);
-
-                        }
-                        else {
-                            encoderDrive(0.7, ROT_SPEED,23, 23, 23, 23, true, 0, 0 , 0, 0, .5);
-                            if (block[i].id == 1){
-                           // encoderDrive(0.7, ROT_SPEED,0, 0, 0, 00, false, 10, 13 , 1, -1, 5);
-                        }
-
-                        }
-
-                        telemetry.addData("Pickup?", "I would say yes, but it's the wrong color.");
-                    }
+                if (blockX <= AREAONE) {
+                    zone = 1;
                 }
-                else{
-
-                    telemetry.addData("Pickup?", "NO!");
+                else if (blockX <= AREATWO){
+                    zone = 2;
                 }
+                else if (blockX >= AREATHREE){
+                    zone = 3;
+                }
+
             }
-            telemetry.update();
+            if (zone == 1){
+                encoderDrive(0.7, 0, -24, -24, 24, 24, false, 0, 0, 0, 0, 1);
+                 encoderDrive(0.7, 0, 5, 5, 5, 5, false, 0, 0, 0, 0, 1);
+                encoderDrive(0.7,0,26,26,-26,-26,false,0,0,0,0,1);
+                encoderDrive(0.7,0,35,35,35,35,false,0,0,0,0,.3);
+                 }
+        if (zone == 2){
+            sleep(1000000);
+            encoderDrive(0.7,0.0,14,14,14,14,false,0,0,0,0,1);
         }
+        if (zone == 3){
+            encoderDrive(0.7,0,24,24,-24,-24,false,0,0,0,0,1);
+            encoderDrive(0.7,0,5,5,5,5,false,0,0,0,0,1);
+            encoderDrive(0.7,0,-26,-26,26,26,false,0,0,0,0,.3);
+            encoderDrive(0.7,0,35,35,35,35,false,0,0,0,0,.3);
+        }
+
+        }
+
+
     } public void encoderDrive(double speed, double armspeed,
                                double leftFInches, double leftBInches,
                                double rightFInches, double rightBInches,

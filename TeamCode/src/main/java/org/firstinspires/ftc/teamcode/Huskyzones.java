@@ -22,7 +22,7 @@ public class Huskyzones extends LinearOpMode {
     public void runOpMode(){
 
 
-        // EncoderProgramExample object = new EncoderProgramExample()
+         EncoderProgramExample object = new EncoderProgramExample();
         Husky = hardwareMap.get(HuskyLens.class, "huskylens");
         Husky.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
 
@@ -32,7 +32,6 @@ public class Huskyzones extends LinearOpMode {
         waitForStart();
 
     while (opModeIsActive()) {
-        EncoderProgramExample object = null;
         object.encoderDrive(0,0,0,0,0,0,false,0,0,0,0,0);
             int READ_PERIOD = 1;
             ;
