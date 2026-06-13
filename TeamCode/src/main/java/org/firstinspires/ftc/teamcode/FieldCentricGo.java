@@ -16,6 +16,11 @@ public class FieldCentricGo extends LinearOpMode {
         DcMotor rightFrontMotor = hardwareMap.get(DcMotor.class, "RFMotor");
         DcMotor rightBackMotor = hardwareMap.get(DcMotor.class, "RBMotor");
 
+        leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
 
